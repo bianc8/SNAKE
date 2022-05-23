@@ -1,0 +1,179 @@
+punta macro	
+	mov ah, 02h
+	int 10h
+endm
+
+posiziona macro x,y
+	mov dl,x
+	mov dh,y					
+	mov bh,0
+	mov ah,2
+	int 10h
+	endm
+
+scrivi macro
+	mov ah, 02h
+	mov dl, ch				;prima di chiaamre la macro metto	
+	int 21h			;cio che devo scrivere in ch
+endm
+
+scrivi_punto macro
+	mov ah, 02h
+	mov dl, punto		;scrive una variabile
+	int 21h
+endm
+
+nascondi macro
+	mov ch, 32
+	mov ah, 1			;nasconde il cursore
+	int 10h
+endm
+
+pulisci macro
+	mov ah, 00h
+	mov al , 03h		;pulisci schermo
+	int 10h	
+endm
+
+scrivi_stringa macro
+	mov ah , 09h		;scrive una stringa in out
+	lea dx, ;stringa
+	int 21h
+endm
+
+acapo macro
+	mov ah,02h
+	mov dl,13				;vado a capo
+	int 21h
+
+	mov ah,02h
+	mov dl,10
+	int 21h
+endm
+
+pausa macro
+	mov     cx, 01h
+	mov     dx, 86A0h
+	mov     ah, 86h
+	int     15h
+endm
+
+pausa_piu_lunga macro
+	mov     cx, 03h
+	mov     dx, 5B60h
+	mov     ah, 86h
+	int     15h
+endm
+
+salvacoo macro
+	mov ah, 03h
+	int 10h
+endm
+
+mostracurs macro
+	mov ch, 6
+	mov cl, 7
+	mov ah, 1
+	int 10h
+endm
+
+usacoosalvate macro
+
+mov dh, riga
+mov dl, colonna
+punta
+endm
+
+scrivi_stringa macro stringa
+mov ah, 09h
+mov dx , offset stringa
+int 21h
+endm
+
+scrivi_char macro char
+mov dl, char
+mov ah, 02h
+int 21h
+endm
+
+;MACRO che cancella la 'coda' dello snake	
+ultimo MACRO
+	mov al, cont
+	cbw
+	mov di,ax
+	dec di
+	mov ah,02h
+	mov dl,POSx[di]															;-Le posizioni della coda dello snake si trovano all'inizio dell'array
+	mov dh,POSy[di]
+	int 10h
+	scrivi_char 32
+	ENDM
+;MACRO che sposta di uno verso sinistra gli array posizionali dello snake
+sposta MACRO l 
+local switch
+	mov al, l
+	cbw
+	dec ax
+	mov di,ax
+	dec ax
+	mov si,ax
+	switch:
+	  mov ch, posX[si]
+	  mov posX[di],ch
+	  mov ch,posY[si]
+	  mov posY[di],ch
+	  dec di
+	  dec si
+	  cmp di,0 
+	  jne switch
+	ENDM
+	
+	
+random MACRO 
+	local x,y
+x:
+     	mov ah,2Ch
+	    int 21h
+		mov ah,0h
+	    mov al,dl
+		div div_x                                 
+		mov x_car,ah
+y:
+		mov ah,2Ch
+	    int 21h
+		mov ah,0h
+	    mov al,dl
+		div div_y                                 
+		mov y_car,ah
+
+		posiziona x_car,y_car
+		mov ah,08h
+		int 10h
+		cmp al,32
+		jne x
+		mov ah,02h
+		mov dl, caramella
+		int 21h
+ENDM	
+	
+scrivi_corpo macro	
+local cicl
+  mov di, 1
+  mov al, cont
+  cbw
+cicl:
+	posiziona posX[di], posY[di]
+	scrivi_char 4 
+	inc si 
+	cmp si, ax
+	jne cicl
+	
+endm
+	
+
+
+
+
+
+	
+
