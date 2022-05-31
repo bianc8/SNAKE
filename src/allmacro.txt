@@ -1,8 +1,3 @@
-punta macro	
-	mov ah, 02h
-	int 10h
-endm
-
 posiziona macro x,y
 	mov dl,x
 	mov dh,y					
@@ -17,73 +12,79 @@ scrivi macro
 	int 21h			;cio che devo scrivere in ch
 endm
 
-scrivi_punto macro
-	mov ah, 02h
-	mov dl, punto		;scrive una variabile
-	int 21h
-endm
-
 nascondi macro
 	mov ch, 32
 	mov ah, 1			;nasconde il cursore
 	int 10h
 endm
 
-pulisci macro
-	mov ah, 00h
-	mov al , 03h		;pulisci schermo
-	int 10h	
-endm
-
-scrivi_stringa macro
-	mov ah , 09h		;scrive una stringa in out
-	lea dx, ;stringa
-	int 21h
-endm
-
-acapo macro
-	mov ah,02h
-	mov dl,13				;vado a capo
-	int 21h
-
-	mov ah,02h
-	mov dl,10
-	int 21h
-endm
-
+pausa_1 macro 
+	mov cx,01h
+	mov dx,86A0h
+	mov ah,86h
+	int 15h
+	endm
+pausa_2 macro 
+	mov cx,01h
+	mov dx,5F90h
+	mov ah,86h
+	int 15h
+	endm	
+pausa_3 macro 
+	mov cx,01h
+	mov dx,24F8h
+	mov ah,86h
+	int 15h
+	endm	
+pausa_4 macro 
+	mov cx,00h
+	mov dx,0EA60h
+	mov ah,86h
+	int 15h
+	endm	
+pausa_6 macro 
+	mov cx,00h
+	mov dx,0C350h
+	mov ah,86h
+	int 15h
+	endm	
 pausa macro
+	mov cx, 01h
+	mov dx, 0ADB0h
+	mov ah, 86h
+	int 15h
+endm
+
+pa_lung_1 macro
+	mov     cx, 02h
+	mov     dx, 07100h
+	mov     ah, 86h
+	int     15h
+endm
+pa_lung_2 macro
+	mov     cx, 02h
+	mov     dx, 49F0h
+	mov     ah, 86h
+	int     15h
+endm
+pa_lung_3 macro
 	mov     cx, 01h
-	mov     dx, 86A0h
+	mov     dx, 0E848h
 	mov     ah, 86h
 	int     15h
 endm
-
-pausa_piu_lunga macro
-	mov     cx, 03h
-	mov     dx, 5B60h
+pa_lung_4 macro
+	mov     cx, 01h
+	mov     dx, 0C138h
 	mov     ah, 86h
 	int     15h
 endm
-
-salvacoo macro
-	mov ah, 03h
-	int 10h
+pa_lung_6 macro
+	mov     cx, 01h
+	mov     dx, 086A0h
+	mov     ah, 86h
+	int     15h
 endm
-
-mostracurs macro
-	mov ch, 6
-	mov cl, 7
-	mov ah, 1
-	int 10h
-endm
-
-usacoosalvate macro
-
-mov dh, riga
-mov dl, colonna
-punta
-endm
-
 scrivi_stringa macro stringa
 mov ah, 09h
 mov dx , offset stringa
@@ -96,6 +97,13 @@ mov ah, 02h
 int 21h
 endm
 
+getpos MACRO x,y
+	mov ah,03h
+	int 10h
+	mov y,dh
+	mov x,dl
+	ENDM
+	
 ;MACRO che cancella la 'coda' dello snake	
 ultimo MACRO
 	mov al, cont
@@ -108,6 +116,7 @@ ultimo MACRO
 	int 10h
 	scrivi_char 32
 	ENDM
+	
 ;MACRO che sposta di uno verso sinistra gli array posizionali dello snake
 sposta MACRO l 
 local switch
@@ -117,19 +126,19 @@ local switch
 	mov di,ax
 	dec ax
 	mov si,ax
-	switch:
-	  mov ch, posX[si]
-	  mov posX[di],ch
-	  mov ch,posY[si]
-	  mov posY[di],ch
-	  dec di
-	  dec si
-	  cmp di,0 
-	  jne switch
+switch:
+	mov ch, posX[si]
+	mov posX[di],ch
+	mov ch,posY[si]
+	mov posY[di],ch
+	dec di
+	dec si
+	cmp di,0 
+   jne switch
 	ENDM
 	
 	
-random MACRO 
+random MACRO code,a,b
 	local x,y
 x:
      	mov ah,2Ch
@@ -137,43 +146,533 @@ x:
 		mov ah,0h
 	    mov al,dl
 		div div_x                                 
-		mov x_car,ah
+		mov a,ah
 y:
 		mov ah,2Ch
 	    int 21h
 		mov ah,0h
 	    mov al,dl
 		div div_y                                 
-		mov y_car,ah
+		mov b,ah
 
-		posiziona x_car,y_car
+		posiziona a,b
 		mov ah,08h
 		int 10h
 		cmp al,32
 		jne x
-		mov ah,02h
-		mov dl, caramella
-		int 21h
+		
+		
+		scrivi_char code
+		mov flag, 1
+ENDM
+random_nemici MACRO code,a,b
+    local x1,y1
+x1:
+    mov ah,2Ch
+    int 21h
+    mov ah,0h
+    mov al,dl
+    div div_nem_x
+    add ah, 2
+    mov a,ah
+y1:
+    mov ah,2Ch
+    int 21h
+    mov ah,0h
+    mov al,dl
+    div div_nem_y
+    mov b,ah
+
+    posiziona a,b
+    mov ah,08h
+    int 10h
+    cmp al,32
+    jne x1
+    scrivi_char code
+    mov flag, 1
 ENDM	
+stampa_punt macro l
+local sec,ter,fine 
+	push ax
+	push bx
+	push cx
 	
-scrivi_corpo macro	
-local cicl
-  mov di, 1
-  mov al, cont
-  cbw
-cicl:
-	posiziona posX[di], posY[di]
-	scrivi_char 4 
-	inc si 
-	cmp si, ax
-	jne cicl
-	
+	cmp l,9
+	ja sec
+	mov ah,l
+	add ah,30h 
+	scrivi_char ah
+	jmp fine
+sec:
+	cmp l, 99
+	ja ter
+	mov al,l
+	cbw
+	mov bh,10
+	div bh
+	mov cl,ah
+	add al,30h
+	scrivi_char al
+	add cl,30h
+	scrivi_char cl
+	jmp fine
+ter:
+	mov al, l
+	cbw
+	mov bh,100
+	div bh
+	mov cl, ah
+	add al, 30h
+	scrivi_char al
+	xor ax,ax
+	mov al, cl
+	cbw
+	mov bh,10
+	div bh
+	mov cl, ah
+	add al, 30h
+	scrivi_char al
+	add cl, 30h
+	scrivi_char cl
+fine : 	
+	pop cx
+	pop bx
+	pop ax
 endm
+
+;Macro che permette di cambiare lo sfondo date le coordinate degli angoli del rettangolo di schermo da cambiare di colore e il colore.	
+sfondo MACRO uno,due,color
+	mov ah,06h
+	xor al,al
+	mov cx,uno   		 		;Upper left corner CH=row, CL=column
+	mov dx,due  		 		;Lower right corner DH=row, DL=column 
+	mov bh,color		 	    ;Colore
+	int 10h
+	ENDM
+
+ritardo MACRO tempo
+    local p1,p2
+    mov dx,tempo
+p1: mov cx,0FF00H   
+p2: dec cx
+    jnz p2
+	dec dx
+	jnz p1
+	mov cx,0000h
+	mov dx,0000h
+	ENDM
+timer MACRO
+	ritardo 1
+	INC contL
+	CMP contL,18
+	JNE finett
+	MOV contL,0
+	CMP secondiUni,39h
+	JE IncSecDec
+	INC secondiUni			
+	JMP finett
+IncSecDec:
+	MOV secondiUni,30h
+	INC secondiDec
+	CMP secondiDec,36h
+	JE IncMin			
+	JMP finett
+IncMin:		
+	MOV secondiDec,30h
+	INC minutiUni
+	CMP minutiUni,39h
+	JE IncMinDec
+	JMP finett
+IncMinDec:	
+	MOV minutiUni,30h
+	INC minutiDec
+	jmp conti
+bo:	jmp inizio
+conti:
+finett:
+	MOV AH,2
+	MOV BH,0
+	MOV DH,TempoRiga
+	MOV DL,TempoColonna
+	INT 10h
+	MOV AH,9
+	MOV BH,0
+	MOV BL,4Fh
+	MOV AL,minutiDec
+	MOV CX,1
+	INT 10h
+	MOV AH,2
+	MOV BH,0
+	MOV DH,TempoRiga
+	MOV DL,TempoColonna
+	ADD DL,1
+	INT 10h
+	MOV AH,9
+	MOV BH,0
+	MOV BL,4Fh
+	MOV AL,minutiUni
+	MOV CX,1
+	INT 10h
+jmp coni
+rinizia1:jmp bo
+coni:
+	MOV AH,2
+	MOV BH,0
+	MOV DH,TempoRiga
+	MOV DL,TempoColonna
+	ADD DL,2
+	INT 10h
+	MOV AH,9
+	MOV BH,0
+	MOV BL,4Fh
+	MOV AL,':'
+	MOV CX,1
+	INT 10h
+	MOV AH,2
+	MOV BH,0
+	MOV DH,TempoRiga
+	MOV DL,TempoColonna
+	ADD DL,3
+	INT 10h
+	MOV AH,9
+	MOV BH,0
+	MOV BL,4Fh
+	MOV AL,secondiDec
+	MOV CX,1
+	INT 10h
+	MOV AH,2
+	MOV BH,0
+	MOV DH,TempoRiga
+	MOV DL,TempoColonna
+	ADD DL,4
+	INT 10h
+	MOV AH,9
+	MOV BH,0
+	MOV BL,4Fh
+	MOV AL,secondiUni
+	MOV CX,1
+	INT 10h
+	endm
+get_pos_curs MACRO
+            mov ah,03h
+			int 10h
+			mov x,dl
+			mov y,dh
+			ENDM	
+tutorial MACRO
+	local loop_inizio,controllo,contr,controlli,fw,fa,fss,fdd,m_pa,fatto,lettua
+	sfondo 0000h,184Fh,34h
+	posiziona 20,5
+	scrivi_stringa tutor0
+	mov si, 0
+	mov al, cont
+	cbw
+	mov cx, ax
+loop_inizio:
+	posiziona posX[si],posY[si]
+	scrivi_char 219
+	inc si
+    loop loop_inizio
+	jmp controllo
+;jmp intermedi
+map: jmp ap
+mwp: jmp wp
+msp: jmp spp
+mdp: jmp dpg
+mf:  jmp ff
+;jmp intermedi
+controllo:	
+	random caramella,x_car,y_car
+	mov ah, 00h
+	int 16h
+	cmp al,'a'
+	je map
+
+	cmp al,'w' 
+	je mwp
+	cmp al,'s'
+	je msp
+	cmp al,'d'
+	je mdp
+	cmp al,27
+	jne controllo
+	jmp mf
+
+contr:	
+	inc tutoll
+	cmp tutoll,70
+	jb zero
+	posiziona 9,7
+	scrivi_stringa tutt
+	posiziona 9,7
+	scrivi_stringa tutor2
+zero:
+	cmp tutoll,30
+	jbe unn
+	posiziona 19,6
+	scrivi_stringa tutt
+	posiziona 19,6
+	scrivi_stringa tutor1
+unn:
+	mov ah,01h
+	int 16h
+	mov al,lettprec
+	jz controlli
+	mov ah, 00h
+	int 16h
+	jmp controlli
+;jmp intermedi
+mwp1: jmp wp
+map1: jmp ap
+msp1: jmp spp
+mdp1: jmp dpg
+;jmp intermedi
+controlli:	
+	cmp lettprec, 's'
+	je sk
+	cmp al,'w' 
+	je mwp1
+sk:
+	cmp lettprec, 'd'
+	je sk2
+    cmp al,'a'
+	je map1
+sk2:
+	cmp lettprec, 'w'
+	je sk3
+	cmp al,'s'
+	je msp1
+sk3:
+	cmp lettprec, 'a'
+	je sk4
+	cmp al,'d'
+	je mdp1
+sk4:
+	cmp al,27
+	je ff
+	jmp contr
+ff: jmp fatto	
+mzctr: jmp contr
+mu:	jmp unn
+mzmg:  jmp mg	
+wp:
+	mov lettprec,'w'
+	cmp al,'s'
+	je mzctr
+	mov al,posx[0]
+	mov ah,posy[0]
+	dec ah
+	posiziona al,ah
+	mov ah,08h				;controlla nella posizione in cui sei che carattere c'è
+	int 10h
+	cmp al, caramella		  ; controllo_asterisco
+	je mzmg
+	cmp al,32
+	jne mu
+	ultimo
+	sposta cont
+	dec posy[0]
+	posiziona posx[0],posy[0]
+	scrivi_char 219
+	pa_lung_1
+	jmp contr
+mzctr1: jmp contr
+mzmg1:  jmp mg	
+mu1: jmp unn
+ap:
+	mov lettprec, 'a'
+	cmp al,'d'
+	je mzctr1 
+	mov al,posx[0]
+	mov ah,posy[0]
+	dec al
+	posiziona al,ah
+	mov ah,08h				;controlla nella posizione in cui sei che carattere c'è
+	int 10h
+	cmp al, caramella         ; controllo_asterisco
+	je mzmg1
+	cmp al,32
+	jne mu1
+	ultimo
+	sposta cont
+	dec posx[0]
+	posiziona posx[0],posy[0]
+	scrivi_char 219
+	pausa_1
+	jmp contr
+mzctr2: jmp contr
+mzmg2:  jmp mg	
+mu2: jmp unn
+spp:
+	mov lettprec, 's'
+	cmp al,'w'
+	je mzctr2
+	mov al,posx[0]
+	mov ah,posy[0]
+	inc ah
+	posiziona al,ah
+	mov ah,08h				;controlla nella posizione in cui sei che carattere c'è
+	int 10h
+	cmp al, caramella			;controllo_asterisco
+	je mzmg2
+	cmp al,32
+	jne mu2
+	ultimo
+	sposta cont
+	inc posy[0]
+	posiziona posx[0],posy[0]
+	scrivi_char 219
+	pa_lung_1
+	jmp contr
+mzctr3: jmp contr
+mzmg3:  jmp mg	
+mu3: jmp unn
+dpg:
+	mov lettprec, 'd'
+	cmp al,'a'
+	je mzctr3
+	mov al,posx[0]
+	mov ah,posy[0]
+	inc al
+	posiziona al,ah
+	mov ah,08h				;controlla nella posizione in cui sei che carattere c'è
+	int 10h
+	cmp al, caramella			; controllo_asterisco
+	je mzmg3
+	cmp al,32
+	jne mu3
+	ultimo
+	sposta cont
+	inc posx[0]
+	posiziona posx[0],posy[0]
+	scrivi_char 219
+	pausa_1
+	jmp contr
+mg:
+	inc cont
+	sposta cont
+	mov ah, x_car
+	mov posX[0], ah
+	mov ah, y_car
+	mov posY[0], ah
+	posiziona x_car, y_car
+	scrivi_char 219
+	random caramella,x_car,y_car
+	pausa
+	mov flag,0
+	jmp contr
+fatto:
+	pulisci POSx,POSy
+	sfondo 0514h,053Ch,34h
+	sfondo 0611h,0645h,0BFh
+	sfondo 0709h,0748h,34h
+	posiziona 17,6
+	scrivi_stringa premi2
+lettua:
+	mov ah,07h
+	int 21h
+	mov ah,0Ch
+	int 21h
+	endm
 	
-
-
-
-
-
+men MACRO
+	local let,lol,lollino,conti,controlli,c1,c2,c3,final,m_pa,mc1,mc2,mfss,mfdd
 	
+	nascondi
+	posiziona 33,7
+	scrivi_stringa menu
+	
+	posiziona 34,8
+	scrivi_char '<'
+	 
+	posiziona 34,8
+	mov y,8
+let:
+	
+	mov ah,07h  
+	int 21h
+	
+	cmp al,13
+    je lollino		;INVIO 
+	 
+	cmp al,72		;verso l'alto
+	jne conti         
+	 
+	get_pos_curs
+	cmp y,8          
+	jbe conti
+	 
+	posiziona 34,y
+	scrivi_char ' ' 
+	sub y,2
+	 
+	posiziona 34,y
+	scrivi_char '<' 
+	jmp let
+	 	
+lol:  jmp let
+lollino:jmp controlli
 
+conti:
+    cmp al,80
+	jne let 
+	 
+	get_pos_curs
+    cmp y,14              ;verso il basso
+    jae let
+	 
+	posiziona 34,y
+	scrivi_char ' ' 
+	 
+	add y,2
+	 
+	posiziona 34,y
+	scrivi_char '<'
+	jmp let 
+	
+controlli:
+    get_pos_curs
+	cmp y,8
+	jne c1
+ 	jmp final
+mc2: jmp c2	
+c1: cmp y,10
+    jne mc2
+	tutorial 
+	jmp final
+c2: cmp y,12
+    jne c3
+	;pagina classifica
+c3:
+	sfondo 0000h,184Fh,07h
+	posiziona 0,0
+	int 20h
+ final:  
+	ENDM
+pulisci MACRO v1,v2
+	local d
+	mov di,-1
+d:
+	inc di
+	mov POSx[di],0
+	mov POSy[di],0
+	mov al,punteggio
+	cbw
+	cmp di,ax
+	jne d
+	mov POSx[0],8
+	mov POSy[0],12
+	mov POSx[1],7
+	mov POSy[1],12
+	mov POSx[2],6
+	mov POSy[2],12
+	mov POSx[3],5
+	mov POSy[3],12
+	mov flag,0
+	mov cont,4
+	mov punteggio,0
+	mov secondiUni,30h
+	mov secondiDec,30h
+	mov minutiUni, 30h
+	mov minutiDec,30h
+	endm

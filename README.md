@@ -14,6 +14,8 @@ When the program is open on Dosbox, we can see a Menu screen with many options:
 
 Play without doing a tutorial
 
+![gameplay](https://github.com/enricBiancott0/SNAKE/blob/main/images/game.png?raw=true)
+
 ## Tutorial
 
 Use the arrows to select "TUTORIAL" to get an overview of the game
