@@ -1,14 +1,13 @@
-# Usage
-When the program is open on Dosbox, we can see a Menu screen with many options:
-
-![tutorial](https://github.com/enricBiancott0/SNAKE/blob/main/images/menu.png?raw=true)
-
-
 ## GIOCA / PLAY
 
 Play without doing a tutorial
 
 ![gameplay](https://github.com/enricBiancott0/SNAKE/blob/main/images/game.png?raw=true)
+
+# Usage
+When the program is open on Dosbox, we can see a Menu screen with many options:
+
+![tutorial](https://github.com/enricBiancott0/SNAKE/blob/main/images/menu.png?raw=true)
 
 ## Tutorial
 
