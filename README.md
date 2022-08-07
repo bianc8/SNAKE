@@ -1,16 +1,10 @@
-# Installation and working program
-
-Download and install [Dosbox](https://www.dosbox.com/download.php?main=1)
-
-Drag the EXP.COM executable on Dosbox
-![tutorial](https://github.com/enricBiancott0/SNAKE/blob/main/images/example.gif?raw=true)
-
 # Usage
 When the program is open on Dosbox, we can see a Menu screen with many options:
 
 ![tutorial](https://github.com/enricBiancott0/SNAKE/blob/main/images/menu.png?raw=true)
 
-## GIOCA
+
+## GIOCA / PLAY
 
 Play without doing a tutorial
 
@@ -23,6 +17,13 @@ Use the arrows to select "TUTORIAL" to get an overview of the game
 To control the snake, use WASD keys
 
 To exit the tutorial and start playing, click the Esc button
+
+# Installation and working program
+
+Download and install [Dosbox](https://www.dosbox.com/download.php?main=1)
+
+Drag the EXP.COM executable on Dosbox
+![tutorial](https://github.com/enricBiancott0/SNAKE/blob/main/images/example.gif?raw=true)
 
 ## Classifica
 
