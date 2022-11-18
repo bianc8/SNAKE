@@ -1,6 +1,6 @@
 ## GIOCA / PLAY
 
-Play without doing a tutorial
+Play the game of Snake
 
 ![gameplay](https://github.com/enricBiancott0/SNAKE/blob/main/images/game.png?raw=true)
 
@@ -70,3 +70,9 @@ D:\> snake.com
 If you want to debug the program, use Turbo Debugger:
 
 D:\> td snake.COM
+
+## Authors
+
+Enrico Biancotto
+
+Valerio Grave
